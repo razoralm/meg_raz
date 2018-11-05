@@ -1,0 +1,4 @@
+e = 0.1000, h = 1.6000, 1 significant voxels
+e = 0.1000, h = 1.7000, 1 significant voxels
+e = 0.1000, h = 1.8000, 1 significant voxels
+e = 0.1000, h = 1.9000, 1 significant voxels

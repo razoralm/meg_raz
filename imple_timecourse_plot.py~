@@ -1,0 +1,53 @@
+import sys
+import os
+import numpy as np
+import mne
+from scipy import stats
+from matplotlib import pyplot
+
+target = "/data/programs/razoral/platon_back_up/pmwords/target/stc-avg-cond/{}_{}_integ5-lh.stc
+
+tmin = -410
+tmax = 615
+integ_ms = 5
+time_range = np.arange(tmin, tmax, integ_ms)
+
+sessions = ["passive1", "passive2"]
+
+sti_words = ["hicha", "hishu", "hisa", "hivu"]
+sti_distractors = ["hichu", "hisha", "hisu", "hiva"]
+
+
+
+for session in sessions
+
+	for word in sti_words
+
+		pyplot.figure(1)
+		pyplot.title("Timecourse_dtc-avg-cond:{}_{}_integ5-lh ".format(session, word))
+		pyplot.xlabel("time [ms]")
+		pyplot.ylabel("intensity")
+		pyplot.xlim(tmin, tmax)
+		pyplot.plot(time_range, avg_w_d[0,1,:], color = "crimson", linewidth = 0.5, label = sti_words[0])
+		pyplot.plot(time_range, avg_w_d[1,1,:], color = "darkblue", linewidth = 0.5, label = sti_words[1])
+		pyplot.plot(time_range, avg_w_d[2,1,:], color = "darkgreen", linewidth = 0.5, label = sti_words[2])
+		pyplot.plot(time_range, avg_w_d[3,1,:], color = "gold", linewidth = 0.5, label = sti_words[3])
+		pyplot.plot(time_range, np.mean(avg_w_d[:,1,:], axis = 0), linewidth = 1.5, color = "m", label = "dw")
+		pyplot.legend(loc = "upper right", framealpha = 0.5)
+		pyplot.grid()
+		pyplot.axvline(0, color="#888888")
+		pyplot.axhline(0, color="#888888")
+		pyplot.savefig(target + "/IMG/new/%s_w1-d1_timecourse_sub%s.png" % (lbl_name, subject_idx+1))
+		pyplot.savefig(target + "/IMG/new/%s_w1-d1_timecourse_sub%s.pdf" % (lbl_name, subject_idx+1))
+		
+	for distr in sti_distractors
+
+pyplot.show()
+
+
+
+
+
+
+
+

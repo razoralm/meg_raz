@@ -1,0 +1,92 @@
+import sys
+import os
+import numpy
+import mne
+from scipy import stats
+
+subjects = [
+     "Arkhipova_Elena",
+     "Biryukov_Aleksey",
+     "Budulev_Nikita",
+     "Filimonov_Rodion",
+     "Galyuta_Ilia",
+     "Gniteeva_Lyudmila",
+     "Goyaeva_Dzerassa",
+     "Kovalev_Dmitriy",
+     "Kozlov_Alexey",
+     "Lashkov_Andrey",
+     "Lomakin_Dmitriy",
+     "Masleniy_Evgeniy",
+     "Nazarova_Maria",
+     "Rekubratskiy_Vitaliy",
+     "Shaballin_Konstantin",
+     "Shulga_Kirill",
+     "Skokova_Julia",
+     "Skovorodko_Olga",
+     "Slobodskoy_Yaroslav",
+     "Spiridonov_Arseniy",
+     "Timonov_Evgeniy",
+     "Trufanova_Zhenya",
+     "Vlasova_Roza",
+     "Yarmolova_Elena"
+]
+
+tmin = -410
+tmax = 615
+
+integ_ms = 5
+
+target_files_format = "/data/programs/razoral/platon_pmwords/target/stc-basecorr/{}_{}_{}_integ{}-lh.stc"
+save_result_format = "/data/programs/razoral/platon_pmwords/target/manual_ttest/{}_{}_integ{}_{}.stc"
+
+time_length = tmax - tmin
+n_voxels = 20484
+
+def stc_subtract_by_sub(sti_words, sti_distractors, label, integ_ms):
+
+    t_len = time_length // integ_ms
+
+    dw_per_sub = numpy.zeros(shape=(len(subjects), n_voxels, t_len))
+    dd_per_sub = numpy.zeros(shape=(len(subjects), n_voxels, t_len))
+
+    stc1 = mne.read_source_estimate(target_files_format.format(subjects[0], "passive1", sti_words[0], integ_ms))
+
+    for subject_idx, subject in enumerate(subjects):
+        print("({:2}/{:2}) reading {}".format(subject_idx+1, len(subjects), subject))
+        for word in sti_words:
+            w1 = mne.read_source_estimate(target_files_format.format(subject, "passive1", word, integ_ms)).data
+            w2 = mne.read_source_estimate(target_files_format.format(subject, "passive2", word, integ_ms)).data
+            dw_per_sub[subject_idx,:,:] += (w1 - w2)
+        dw_per_sub[subject_idx,:,:] /= len(sti_words)
+		
+				
+
+        for distractor in sti_distractors:
+            d1 = mne.read_source_estimate(target_files_format.format(subject, "passive1", distractor, integ_ms)).data
+            d2 = mne.read_source_estimate(target_files_format.format(subject, "passive2", distractor, integ_ms)).data
+            dd_per_sub[subject_idx,:,:] += (d1 - d2)
+        dd_per_sub[subject_idx,:,:] /= len(sti_distractors)
+# compare with TFCE data
+        numpy.save('/data/programs/razoral/platon_pmwords/target/data_for_TFCE/dD_24sub' , dd_per_sub)
+# compare with TFCE data
+        numpy.save('/data/programs/razoral/platon_pmwords/target/data_for_TFCE/dW_24sub' , dw_per_sub)
+
+    t_stat, p_val = stats.ttest_rel(dw_per_sub, dd_per_sub, axis=0)
+  
+    # STC Viewer normalisation
+    t_sign = numpy.sign(t_stat)
+    p_val_inv = numpy.multiply((1 - p_val), t_sign)
+
+    print('p_val_{}:\n{}'.format(integ_ms, p_val[100:110,20:30]))
+    
+    t_stat_stc = mne.SourceEstimate(t_stat, vertices = stc1.vertices, tmin = stc1.tmin, tstep = stc1.tstep)
+    p_val_stc = mne.SourceEstimate(p_val_inv, vertices = stc1.vertices, tmin = stc1.tmin, tstep = stc1.tstep)
+
+    t_stat_stc.save(save_result_format.format("t-stat", subject_idx+1, integ_ms, label))
+    p_val_stc.save(save_result_format.format("p-val", subject_idx+1, integ_ms, label))
+
+    return (t_stat_stc, p_val_inv)
+
+
+#for integ_ms in [1, 5, 25]:
+stc_subtract_by_sub(["hicha", "hishu", "hisa", "hivu"], ["hichu", "hisha", "hisu", "hiva"],  "dw_vs_dd", integ_ms)

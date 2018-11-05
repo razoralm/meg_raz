@@ -1,0 +1,2 @@
+e = 0.7000, h = 1.9000, 1232 significant voxels
+e = 0.7000, h = 2.0000, 139 significant voxels

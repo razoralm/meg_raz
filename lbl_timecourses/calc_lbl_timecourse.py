@@ -1,0 +1,271 @@
+# calculate timecourse for labeled data
+import os
+import numpy as np
+import mne
+from matplotlib import pyplot
+
+from timecourse_an_config import *
+
+
+def calc_lbl_timecourse(lbl_inds, difference_type):
+
+	w1 = np.zeros((len(lbl_inds), ((tmax-tmin)//integ_ms))) 
+	#print('w1_zeros shape: ', w1.shape)
+	w2 = np.zeros((len(lbl_inds), ((tmax-tmin)//integ_ms))) 
+	d1 = np.zeros((len(lbl_inds), ((tmax-tmin)//integ_ms))) 
+	d2 = np.zeros((len(lbl_inds), ((tmax-tmin)//integ_ms))) 
+	
+	for subject_idx, subject in enumerate(subjects):	
+		#print("\n\t({:2}/{:2}) reading {}\n".format(subject_idx+1, len(subjects), subject))
+
+		for w_id, word in enumerate(words):
+			
+			stc = mne.read_source_estimate(data_path.format(subject, "passive1", word, integ_ms))
+			#print('stc shape: ', stc.data.shape)
+			#print('w1_lbl shape: ', stc.data[lbl_inds, :].shape)				
+			w1 += stc.data[lbl_inds, :]
+			
+			stc = mne.read_source_estimate(data_path.format(subject, "passive2", word, integ_ms))
+			w2 += stc.data[lbl_inds, :]
+
+			stc = mne.read_source_estimate(data_path.format(subject, "passive1", distractors[w_id], integ_ms))
+			d1 += stc.data[lbl_inds, :]
+
+			stc = mne.read_source_estimate(data_path.format(subject, "passive2", distractors[w_id], integ_ms))
+			d2 += stc.data[lbl_inds, :]
+
+	if difference_type == "before_after":	
+
+		before_learning = np.mean((w1-d1)/(len(subjects)*len(words)), axis=0)
+		after_learning = np.mean((w2-d2)/(len(subjects)*len(words)), axis=0)
+		dw_dd = before_learning-after_learning
+
+		return(before_learning, after_learning, dw_dd)
+
+	elif difference_type == "dW_dD":
+
+		dW = np.mean((w1-w2)/(len(subjects)*len(words)), axis=0)
+
+		dD = np.mean((d1-d2)/(len(subjects)*len(words)), axis=0)
+
+		dw_dd = dW-dD
+
+		return(dW, dD, dw_dd)
+
+	elif difference_type == "p1_p2":
+
+		S1 = np.mean((w1+d1)/(len(subjects)*len(words)*2), axis=0)
+
+		W2 = np.mean(w2/(len(subjects)*len(words)), axis = 0)
+
+		D2 = np.mean(d2/(len(subjects)*len(words)), axis =0)
+
+		return (S1, W2, D2)
+
+
+def table_lbl_time_avg_by_sub(lbl_inds, lbl_name, time_inds, time_lbl, table_path):
+	# averaging ROI by time and space
+
+	os.makedirs(table_path, exist_ok=True)
+	f = open(table_path + "/avg_source_activation-lbl_{}-time_{}.tsv".format(lbl_name, time_lbl), "w+")
+
+	f.write("Subject")
+	
+	for word in words:
+	#	f.write("\t{0}_passive1\t{0}_passive2\t{0}_before_learning\td_{0}_after_learning\t{0}_double_difference".format(word) 
+	#f.write("\tW_passive1\tW_passive2\tW_before_learning\tW_after_learning\W_double_difference")
+		f.write("\t{0}_double_difference".format(word)) 
+	f.write("\tW_double_difference")       
+	f.write("\n")
+
+	for subject_idx, subject in enumerate(subjects):	
+		print("\n\t({:2}/{:2}) reading {}\n".format(subject_idx+1, len(subjects), subject))
+		
+		f.write("{}".format(subject))
+
+		W1=0;W2=0;D1=0;D2=0;
+
+
+		for w_id, word in enumerate(words):
+			
+			stc = mne.read_source_estimate(data_path.format(subject, 'passive1', word, integ_ms))
+			#print('\nstc.data', np.shape(stc.data))			
+			data_cur = np.mean(stc.data[lbl_inds, :], axis =0)
+			#print('\nlabeled_stc', np.shape(data_cur))
+			w1 = np.mean(data_cur[int(time_inds[0]):int(time_inds[1])], axis =0)# hicha1_value
+			#print('\nw1=', w1)	
+			W1 += w1 #avgW1_value
+
+			stc = mne.read_source_estimate(data_path.format(subject, 'passive1', distractors[w_id], integ_ms))
+			data_cur = np.mean(stc.data[lbl_inds, :], axis =0)
+			d1 = np.mean(data_cur[int(time_inds[0]):int(time_inds[1])], axis =0)
+			D1 += d1	
+
+			stc = mne.read_source_estimate(data_path.format(subject, 'passive2', word, integ_ms))
+			data_cur = np.mean(stc.data[lbl_inds, :], axis =0)
+			w2 = np.mean(data_cur[int(time_inds[0]):int(time_inds[1])], axis =0)		
+			W2 += w2
+
+			stc = mne.read_source_estimate(data_path.format(subject, 'passive2', distractors[w_id], integ_ms))
+			data_cur = np.mean(stc.data[lbl_inds, :], axis =0)
+			d2 = np.mean(data_cur[int(time_inds[0]):int(time_inds[1])], axis =0)
+			D2 += d2	
+			
+			dw_dd = (w1-w2)-(d1-d2)
+
+			f.write("\t{:e}".format(dw_dd))
+		
+		dW_dD = ((W1-W2)-(D1-D2))/4
+		f.write("\t{:e}".format(dW_dD))
+		f.write("\n")
+		
+	f.close()
+
+
+
+def table_max_significace_voxel_time_avg_by_sub(vox_ind, lbl_name, time_inds, time_lbl, table_path):
+	# averaging ROI by time and space
+
+	assert(len(vox_ind)==1), 'not one maximum in data'
+
+	os.makedirs(table_path, exist_ok=True)
+	f = open(table_path + "/max-significance-voxel_avg_activation-lbl_{}-time_{}.tsv".format(lbl_name, time_lbl), "w+")
+		
+	print("Writing_table for ", lbl_name , "in ",  time_lbl)
+	f.write("Subject")
+	
+	for word in words:
+	#	f.write("\t{0}_passive1\t{0}_passive2\t{0}_before_learning\td_{0}_after_learning\t{0}_double_difference".format(word) 
+	#f.write("\tW_passive1\tW_passive2\tW_before_learning\tW_after_learning\W_double_difference")
+		f.write("\t{0}_double_difference".format(word)) 
+	f.write("\tW_double_difference")       
+	f.write("\n")
+
+	for subject_idx, subject in enumerate(subjects):	
+		#print("\n\t({:2}/{:2}) reading {}\n".format(subject_idx+1, len(subjects), subject))
+		
+		f.write("{}".format(subject))
+
+		W1=0;W2=0;D1=0;D2=0;
+
+
+		for w_id, word in enumerate(words):
+			
+			stc = mne.read_source_estimate(data_path.format(subject, 'passive1', word, integ_ms))
+			#print('\nstc.data', np.shape(stc.data))			
+			data_cur = stc.data[vox_ind, :]
+			#print('\nlabeled_stc', np.shape(data_cur))
+			#print('\nlabeled_stc', data_cur)
+			w1 = np.mean(data_cur[:, int(time_inds[0]):int(time_inds[1])], axis=1)# hicha1_value
+			#print('\nw1=', w1)
+			#print(w1.shape)	
+			W1 += w1 #avgW1_value
+
+			stc = mne.read_source_estimate(data_path.format(subject, 'passive1', distractors[w_id], integ_ms))
+			data_cur = stc.data[vox_ind, :]
+			d1 = np.mean(data_cur[:, int(time_inds[0]):int(time_inds[1])], axis =1)
+			#print('\nd1=', d1)
+			#print(d1.shape)				
+			D1 += d1	
+
+			stc = mne.read_source_estimate(data_path.format(subject, 'passive2', word, integ_ms))
+			data_cur = stc.data[vox_ind, :]
+			w2 = np.mean(data_cur[:, int(time_inds[0]):int(time_inds[1])], axis =1)		
+			#print('\nw2=', w2)
+			#print(w2.shape)				
+			W2 += w2
+
+			stc = mne.read_source_estimate(data_path.format(subject, 'passive2', distractors[w_id], integ_ms))
+			data_cur = stc.data[vox_ind, :]
+			d2 = np.mean(data_cur[:, int(time_inds[0]):int(time_inds[1])], axis =1)
+			#print('\nd2=', w2)
+			#print(d2.shape)					
+			D2 += d2	
+			
+			dw_dd = (w1-w2)-(d1-d2)
+			#print('dw_dd=')			
+			#print(dw_dd)			
+			
+			f.write("\t{:e}".format(dw_dd[0]))
+		
+		dW_dD = ((W1-W2)-(D1-D2))/4
+		f.write("\t{:e}".format(dW_dD[0]))
+		f.write("\n")
+		
+	f.close()
+
+
+
+def plot_lbl_timecourse_by_sub(lbl_inds, lbl_name, session, img_path):
+
+	time_range = np.arange(tmin, tmax, integ_ms)
+
+	for subject_idx, subject in enumerate(subjects):	
+		print("\n\t({:2}/{:2}) reading {}\n".format(subject_idx+1, len(subjects), subject))
+		
+		w1 = np.zeros((((tmax-tmin)//integ_ms))) 
+		#print('w1_zeros shape: ', w1.shape)
+		w2 = np.zeros( ( ( (tmax-tmin)//integ_ms) ) ) 
+		d1 = np.zeros((((tmax-tmin)//integ_ms))) 
+		d2 = np.zeros((((tmax-tmin)//integ_ms))) 
+	
+		pyplot.figure(101+subject_idx)
+		pyplot.title(lbl_name + 'avg_timecourse')
+		pyplot.xlabel("time [ms]")
+		pyplot.ylabel("avg_activation [nA]")
+		pyplot.xlim(tmin, tmax)
+
+
+		for w_id, word in enumerate(words):
+			
+			stc = mne.read_source_estimate(data_path.format(subject, session, word, integ_ms))
+			w_cur = np.mean(stc.data[lbl_inds, :], axis =0)
+			pyplot.plot(time_range, w_cur, linewidth = 1, label = word+session[-1])			
+	
+			w1 += np.mean(stc.data[lbl_inds, :], axis =0)
+			
+		
+		pyplot.legend(loc = "upper right", framealpha = 0.5)
+		pyplot.grid()
+		pyplot.axvline(0, color="#888888")
+		pyplot.axhline(0, color="#888888")		
+		pyplot.savefig(img_path +'passive2/' + lbl_name + '_' + subject + '_W{}.png'.format(session[-1]))
+
+
+		pyplot.figure(201+subject_idx)
+		pyplot.title(lbl_name + 'avg_timecourse')
+		pyplot.xlabel("time [ms]")
+		pyplot.ylabel("avg_activation [nA]")
+		pyplot.xlim(tmin, tmax)
+
+		for d_id, distractor in enumerate(distractors):
+
+			stc = mne.read_source_estimate(data_path.format(subject, session, distractor, integ_ms))
+			d_cur = np.mean(stc.data[lbl_inds, :], axis =0)
+			pyplot.plot(time_range, d_cur, linewidth = 1, label = distractor+session[-1])
+
+			d1 += np.mean(stc.data[lbl_inds, :], axis=0)
+			
+		pyplot.legend(loc = "upper right", framealpha = 0.5)
+		pyplot.grid()
+		pyplot.axvline(0, color="#888888")
+		pyplot.axhline(0, color="#888888")
+		pyplot.savefig(img_path +'passive2/' + lbl_name + '_' + subject +'_D{}.png'.format(session[-1]))
+
+
+		pyplot.figure(301+subject_idx)
+		pyplot.title(lbl_name + 'avg_timecourse')
+		pyplot.xlabel("time [ms]")
+		pyplot.ylabel("avg_activation [nA]")
+		pyplot.xlim(tmin, tmax)
+		pyplot.plot(time_range, w1/len(words), linewidth = 1, color = "g", label = 'W'+session[-1])
+		pyplot.plot(time_range, d1/len(words), linewidth = 1, color = "b",label = 'D'+session[-1])
+		pyplot.plot(time_range, (w1-d1)/len(words),linewidth =1.5, color = "r", label = 'W{}-D{}'.format(session[-1], session[-1]))
+		pyplot.legend(loc = "upper right", framealpha = 0.5)
+		pyplot.grid()
+		pyplot.axvline(0, color="#888888")
+		pyplot.axhline(0, color="#888888")	
+		pyplot.savefig(img_path +'passive2/w2_d2/' + lbl_name + '_' + subject +'_passive{}.png'.format(session[-1]))
+
+		
+

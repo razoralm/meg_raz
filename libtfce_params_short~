@@ -1,0 +1,3 @@
+./libtfce -n 100 -e 0.666 -h 2 --type mesh-time --source-space /data/programs/razoral/platon_pmwords/freesurfer/avg/bem/avg-ico-5p-src.fif --input-stcs Arkhipova_Elena_dW_144_217ms_integ5-lh.stc Arkhipova_Elena_dW_144_217ms_integ5-rh.stc Arkhipova_Elena_dD_144_217ms_integ5-lh.stc Arkhipova_Elena_dD_144_217ms_integ5-rh.stc Biryukov_Aleksey_dW_144_217ms_integ5-lh.stc Biryukov_Aleksey_dW_144_217ms_integ5-rh.stc Biryukov_Aleksey_dD_144_217ms_integ5-lh.stc Biryukov_Aleksey_dD_144_217ms_integ5-rh.stc Budulev_Nikita_dW_144_217ms_integ5-lh.stc Budulev_Nikita_dW_144_217ms_integ5-rh.stc Budulev_Nikita_dD_144_217ms_integ5-lh.stc Budulev_Nikita_dD_144_217ms_integ5-rh.stc --output-stcs ssTFCE_144_217ms_integ5-lh ssTFCE_144_217ms_integ5-rh
+
+

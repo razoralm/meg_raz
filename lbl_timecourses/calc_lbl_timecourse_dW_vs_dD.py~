@@ -1,0 +1,53 @@
+# calculate timecourse for labeled data
+import numpy as np
+import mne
+from sub_list import *
+
+def calc_lbl_timecourse(lbl_inds):
+
+	
+	for subject_idx, subject in enumerate(subjects):	
+		print("({:2}/{:2}) reading {}\n".format(subject_idx+1, len(subjects), subject))
+		#c_w1 =[]; c_w2 =[]
+		#c_d1 =[]; c_d2 =[]
+
+		for w_id, word in enumerate(words):
+			stc = mne.read_source_estimate(data_path.format(subject, "passive1", word))
+			w1 =+ stc.data[lbl_inds, :]
+			#c_w1 =+ stc.data[lbl_inds, :]
+			stc = []
+
+			stc = mne.read_source_estimate(data_path.format(subject, "passive2", word))
+			w2 =+ stc.data[lbl_inds, :]
+			#c_w2 =+ stc.data[lbl_inds, :]			
+			stc = []
+
+		#w11 =+ c_w1/len(words)
+		#w22 =+ c_w2/len(words)
+
+		for d_id, distractor in enumerate(distractors):
+	
+			stc = mne.read_source_estimate(data_path.format(subject, "passive1", distractor))
+			d1 =+ stc.data[lbl_inds, :]
+			#c_d1 =+ stc.data[lbl_inds, :]
+
+			stc = mne.read_source_estimate(data_path.format(subject, "passive2", distractor))
+			d2 =+ stc.data[lbl_inds, :]
+			#c_d2 =+ stc.data[lbl_inds, :]
+
+		#d11 =+ c_d1/len(distractors)
+		#d22 =+ c_d2/len(distractors)
+
+
+	#before_learning = np.mean((w1-d1)/(len(subjects)*len(words)), axis=0)
+	#after_learning = np.mean((w2-d2)/(len(subjects)*len(words)), axis=0)
+	#dw_dd = before_learning-after_learning
+
+	dW = np.mean((w1-w2)/(len(subjects)*len(words)), axis=0)
+
+	dD = np.mean((d1-d2)/(len(subjects)*len(words)), axis=0)
+
+	dW_dD = dW-dD
+
+	return(dW, dD, dw_dd, dW_dD)
+

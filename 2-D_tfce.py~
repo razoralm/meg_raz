@@ -1,0 +1,125 @@
+import numpy
+from array import array
+import subprocess
+import random
+import os
+import pickle
+
+subjects = [
+	"Arkhipova_Elena",
+	"Biryukov_Aleksey",
+	"Budulev_Nikita",
+	"Filimonov_Rodion",
+	"Galyuta_Ilia",
+	"Gniteeva_Lyudmila",
+	"Goyaeva_Dzerassa",
+	"Kovalev_Dmitriy",
+	"Kozlov_Alexey",
+	"Lashkov_Andrey",
+	"Lomakin_Dmitriy",
+	"Masleniy_Evgeniy",
+	"Nazarova_Maria",
+	"Rekubratskiy_Vitaliy",
+	"Shaballin_Konstantin",
+	"Shulga_Kirill",
+	"Skokova_Julia",
+	"Skovorodko_Olga",
+	"Slobodskoy_Yaroslav",
+	"Spiridonov_Arseniy",
+	"Timonov_Evgeniy",
+	"Trufanova_Zhenya",
+	"Vlasova_Roza",
+	"Yarmolova_Elena"]
+
+surrogates = range(30)
+
+### files formats
+
+## real data:
+
+TFCE_data_path = '/data/programs/razoral/platon_pmwords/target/data_for_TFCE/{}_{}_{}_integ5-{}.stc'
+
+TFCE_sur_data_path = '/data/programs/razoral/platon_pmwords/target/data_for_TFCE/surrogate/{}_{}_{}_{}_{}-{}.stc'
+
+#Arkhipova_Elena_dD_144_217ms_integ5-lh.stc vs Arkhipova_Elena_dW_144_217ms_integ5-lh.stc
+#Arkhipova_Elena_dD_226_362ms_integ5-lh.stc
+#Arkhipova_Elena_dD__integ5-lh.stc
+
+## surrogate data:
+
+# /surrogate/{}_{}_{}_{}' 
+# D/W_modification_param_n
+
+# Dgauss_mean0.4_var0.1_0-lh.stc
+#vs
+# Wgauss_add_const_0.1_0-lh.stc
+# Wgauss_add_const_0.1_0-lh.stc
+# Wgauss_add_const_0.1_0-lh.stc
+
+real_data =1 # flag which type of data
+
+TFCE_files = []
+
+outputTFCE_files = "TFCE_{}_integ5-{}.stc"
+
+output_lh = []
+output_rh = []
+output = []
+
+if real_data==1:
+
+	# set time period on what TFCE calculated 
+	time_lbl = '144_217ms'
+	#time_lbl = '226_362ms'
+	#time_lbl = ''
+	
+	for subject in subjects:
+		  
+		TFCE_files.append(TFCE_data_path.format(subject, "dW", time_lbl, "lh"))
+		TFCE_files.append(TFCE_data_path.format(subject, "dW", time_lbl, "rh"))
+		TFCE_files.append(TFCE_data_path.format(subject, "dD", time_lbl, "lh"))
+		TFCE_files.append(TFCE_data_path.format(subject, "dW", time_lbl, "rh"))
+	
+	output_rh = outputTFCE_files.format(time_lbl, lh)	
+	output_lh = outputTFCE_files.format(time_lbl, rh)
+	output = output_lh.append(output_rh)
+
+else 
+	
+	# set surrogate difference type
+	difference_type = "add_const" 
+
+	# set sur distractors params
+	var = "var0.1" 
+	mean = "mean0.4"
+
+	for k in surrogates:
+		#{ Dgauss }_{}_{}_{}_{}-{}.stc
+# Dgauss_mean0.4_var0.1_0-lh.stc
+#vs
+# Wgauss_add_const_0.1_0-lh.stc                     # [10, 2.5, 1, 0.5, 0.2, 0.1, 0.05, 0.01]
+		TFCE_files.append(TFCE_sur_data_path.format("Wgauss", difference_type, "10", k, "lh"))
+		TFCE_files.append(TFCE_sur_data_path.format("Wgauss", difference_type, "10", k,"rh"))
+		TFCE_files.append(TFCE_sur_data_path.format("Dgauss", mean, var, k, "lh"))
+		TFCE_files.append(TFCE_sur_data_path.format("Dgauss", mean, var, k, "rh"))
+
+	output_rh = outputTFCE_files.format(difference_type.append("10"), lh)	
+	output_lh = outputTFCE_files.format(difference_type.append("10"), rh)
+	output = output_lh.append(output_rh)
+
+args = [
+"/.libtfce", 
+"-n", "100", 
+"-e", "0.666",
+"-h", "2", 
+"--type", "mesh-time",
+"--source-space", "/data/programs/razoral/platon_pmwords/freesurfer/avg/bem/avg-ico-5p-src.fif",
+"--input-stcs", TFCE_files,
+"--output-stcs", output
+]
+
+# call libtfce binary
+subprocess.call(args)
+
+
+    

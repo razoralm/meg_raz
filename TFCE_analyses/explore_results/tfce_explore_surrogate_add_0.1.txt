@@ -1,0 +1,6 @@
+e = 0.5000, h = 1.9000, 16284 significant voxels
+e = 0.7000, h = 1.9000, 16336 significant voxels
+e = 0.7000, h = 2.0000, 16335 significant voxels
+e = 0.6000, h = 2.0000, 16309 significant voxels
+e = 0.5000, h = 2.0000, 16283 significant voxels
+e = 0.6000, h = 1.9000, 16310 significant voxels

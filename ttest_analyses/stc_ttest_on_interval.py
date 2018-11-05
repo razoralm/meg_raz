@@ -1,0 +1,127 @@
+import sys
+import os
+import numpy
+import mne
+from scipy import stats
+#import app
+
+subjects = [
+	"Arkhipova_Elena",
+	"Biryukov_Aleksey",
+	"Budulev_Nikita",
+	"Filimonov_Rodion",
+	"Galyuta_Ilia",
+	"Gniteeva_Lyudmila",
+	"Goyaeva_Dzerassa",
+	"Kovalev_Dmitriy",
+	"Kozlov_Alexey",
+	"Lashkov_Andrey",
+	"Lomakin_Dmitriy",
+	"Masleniy_Evgeniy",
+	"Nazarova_Maria",
+	"Rekubratskiy_Vitaliy",
+	"Shaballin_Konstantin",
+	"Shulga_Kirill",
+	"Skokova_Julia",
+	"Skovorodko_Olga",
+	"Slobodskoy_Yaroslav",
+	"Spiridonov_Arseniy",
+	"Timonov_Evgeniy",
+	"Trufanova_Zhenya",
+	"Vlasova_Roza",
+	"Yarmolova_Elena"
+]
+
+timings = ["230_280", "285_295", "465_515", "218_459"]
+time_intervals = [[230, 280], [285, 295], [465, 515], [218, 459]] # numpy array?
+
+tmin = -410
+tmax = 615
+
+target_files_format = "/data/programs/razoral/platon_back_up/prj/pmwords/target/stc-basecorr/{}_{}_{}_integ{}-lh.stc"
+save_result_format = "/data/programs/razoral/platon_back_up/prj/pmwords/target/ttest_on_intervals/{}_{}_integ{}_{}_{}"
+
+n_voxels = 20484 # lh_only ? stc.save error
+time_length = tmax - tmin
+
+
+
+def stc_ttest(sti_words, sti_distractors, label, timing, time_intervals, integ_ms):
+
+	t_len = time_length // integ_ms
+	dw_per_sub = numpy.zeros(shape = (len(subjects), n_voxels, t_len))
+	dd_per_sub = numpy.zeros(shape = (len(subjects), n_voxels, t_len))
+	
+	stc1 = mne.read_source_estimate(target_files_format.format(subjects[0], "passive1", sti_words[0], integ_ms))
+	print(stc1.tmin, stc1.tstep)
+	
+	for subject_idx, subject in enumerate(subjects):
+		print("({:2}/{:2}) reading {}\n".format(subject_idx+1, len(subjects), subject))
+	
+		for word in sti_words:
+			
+			w1 = mne.read_source_estimate(target_files_format.format(subject, "passive1", word, integ_ms)).data
+			w2 = mne.read_source_estimate(target_files_format.format(subject, "passive2", word, integ_ms)).data
+			dw_per_sub[subject_idx,:,:] += (w1 - w2)
+		dw_per_sub[subject_idx,:,:] /= len(sti_words)
+
+		for distractor in sti_distractors:
+			d1 = mne.read_source_estimate(target_files_format.format(subject, "passive1", distractor, integ_ms)).data
+			d2 = mne.read_source_estimate(target_files_format.format(subject, "passive2", distractor, integ_ms)).data
+			dd_per_sub[subject_idx,:,:] += (d1 - d2)
+		dd_per_sub[subject_idx,:,:] /= len(sti_distractors)
+	
+	# calculate all once
+	# for time_int in time int cycle! draw upper part here
+
+	for timing_idx, time_interval in enumerate(time_intervals):
+		print("({:2}/{:2}) calculate fdr on onterval {}_{}_ms\n".format(timing_idx+1, len(time_intervals), time_interval[0], time_interval[1] ))
+
+		t0 = int(time_interval[0]//integ_ms)
+		print("t0_int: %s" % (t0))
+		t1 = int((time_interval[1]//integ_ms) + 1)
+		print("t1_int: %s" % (t1))
+		dt = int(t1 - t0)
+		print("dt: %s\n" % (dt))
+		
+		print(stc1.tmin, stc1.tstep)
+		ambg_ind = int(abs(stc1.tmin//stc1.tstep))
+		print("ambg_point: %s" % (ambg_ind))
+	
+		t0_ambg = int(ambg_ind + t0)
+		print("t0_ambg: %s" % (t0_ambg))
+		t1_ambg = int(ambg_ind + t1)
+		print("t1_ambg: %s" % (t1_ambg))
+		
+		# t-test + fdr 
+		t_stat, p_val = stats.ttest_rel(dw_per_sub[:,:,t0_ambg:t1_ambg], dd_per_sub[:,:,t0_ambg:t1_ambg], axis=0)
+				
+		#p_val_mask, p_val_corrected = mne.stats.fdr_correction(p_val, alpha = 0.05, method = 'indep')
+		#n_valid_p = numpy.count_nonzero(p_val_mask)
+		print('n_valid_p_val:\n {}'.format(n_valid_p))
+
+		# STC Viewer normalisation
+		t_sign = numpy.sign(t_stat)
+		p_val_stc_norm = numpy.multiply((1 - p_val), t_sign)
+		#p_val_corrected_stc_norm = numpy.multiply((1 - p_val_corrected), t_sign)
+		print('p_val_stc{}:\n{}\n'.format(integ_ms, p_val_corrected[105:111,0]))	
+		print('p_val_corrected_stc{}:\n{}\n'.format(integ_ms, p_val_corrected_stc_norm[105:111,0]))
+		#print('p_val_corrected_stc{}:\n{}\n'.format(integ_ms, p_val_corrected_stc_norm.shape))
+
+		tmin_s = time_interval[0]/1000
+		t_stat_stc = mne.SourceEstimate(t_stat, vertices = stc1.vertices, tmin = tmin_s, tstep = stc1.tstep)
+		p_val_stc = mne.SourceEstimate(p_val_stc_norm, vertices = stc1.vertices, tmin = tmin_s, tstep = stc1.tstep)
+		#p_val_mask_stc = mne.SourceEstimate(p_val_mask, vertices = stc1.vertices, tmin = tmin_s, tstep = stc1.tstep)
+		#p_val_corrected_stc = mne.SourceEstimate(p_val_corrected_stc_norm, vertices = stc1.vertices, tmin = tmin_s, tstep = stc1.tstep)
+
+		t_stat_stc.save(save_result_format.format("t-stat", subject_idx+1, integ_ms, label, timing[timing_idx]))
+		p_val_stc.save(save_result_format.format("p-val", subject_idx+1, integ_ms, label, timing[timing_idx]))
+		#p_val_mask_stc.save(save_result_format.format("p_val_fdr_mask", subject_idx+1, integ_ms, label, timing[timing_idx]))
+		#p_val_corrected_stc.save(save_result_format.format("p-val_fdr_cor", subject_idx+1, integ_ms, label, timing[timing_idx]))
+
+
+#for integ_ms in [25, 5, 1]:
+	stc_ttest(["hicha", "hishu", "hisa", "hivu"], ["hichu", "hisha", "hisu", "hiva"],  "dw_vs_dd", timings, time_intervals, 5)
+
+	
+		

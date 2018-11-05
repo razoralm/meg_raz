@@ -1,0 +1,79 @@
+$ ./libtfce -n 100 -e 0.666 -h 2 --type mesh-time --source-space
+freesurfer/avg/bem/avg-ico-5p-src.fif 
+--input-stcs 
+Arkhipova_Elena_dW_144_217ms_integ5-lh.stc Arkhipova_Elena_dW_144_217ms_integ5-rh.stc 
+Arkhipova_Elena_dD_144_217ms_integ5-lh.stc Arkhipova_Elena_dD_144_217ms_integ5-rh.stc 
+
+Biryukov_Aleksey_dW_144_217ms_integ5-lh.stc Biryukov_Aleksey_dW_144_217ms_integ5-rh.stc 
+Biryukov_Aleksey_dD_144_217ms_integ5-lh.stc Biryukov_Aleksey_dD_144_217ms_integ5-rh.stc 
+
+Budulev_Nikita_dW_144_217ms_integ5-lh.stc Budulev_Nikita_dW_144_217ms_integ5-rh.stc 
+Budulev_Nikita_dD_144_217ms_integ5-lh.stc Budulev_Nikita_dD_144_217ms_integ5-rh.stc 
+
+Filimonov_Rodion_dW_144_217ms_integ5-lh.stc Filimonov_Rodion_dW_144_217ms_integ5-rh.stc 
+Filimonov_Rodion_dD_144_217ms_integ5-lh.stc Filimonov_Rodion_dD_144_217ms_integ5-rh.stc 
+
+Galyuta_Ilia_dW_144_217ms_integ5-lh.stc Galyuta_Ilia_dW_144_217ms_integ5-rh.stc 
+Galyuta_Ilia_dD_144_217ms_integ5-lh.stc Galyuta_Ilia_dD_144_217ms_integ5-rh.stc 
+
+Gniteeva_Lyudmila_dW_144_217ms_integ5-lh.stc Gniteeva_Lyudmila_dW_144_217ms_integ5-rh.stc 
+Gniteeva_Lyudmila_dD_144_217ms_integ5-lh.stc Gniteeva_Lyudmila_dD_144_217ms_integ5-rh.stc 
+
+Goyaeva_Dzerassa_dW_144_217ms_integ5-lh.stc Goyaeva_Dzerassa_dW_144_217ms_integ5-rh.stc 
+Goyaeva_Dzerassa_dD_144_217ms_integ5-lh.stc Goyaeva_Dzerassa_dD_144_217ms_integ5-rh.stc 
+
+Kovalev_Dmitriy_dW_144_217ms_integ5-lh.stc Kovalev_Dmitriy_dW_144_217ms_integ5-rh.stc 
+Kovalev_Dmitriy_dD_144_217ms_integ5-lh.stc Kovalev_Dmitriy_dD_144_217ms_integ5-rh.stc 
+
+Kozlov_Alexey_dW_144_217ms_integ5-lh.stc Kozlov_Alexey_dW_144_217ms_integ5-rh.stc 
+Kozlov_Alexey_dD_144_217ms_integ5-lh.stc Kozlov_Alexey_dD_144_217ms_integ5-rh.stc 
+
+Lashkov_Andrey_dW_144_217ms_integ5-lh.stc Lashkov_Andrey_dW_144_217ms_integ5-rh.stc 
+Lashkov_Andrey_dD_144_217ms_integ5-lh.stc Lashkov_Andrey_dD_144_217ms_integ5-rh.stc 
+
+Lomakin_Dmitriy_dW_144_217ms_integ5-lh.stc Lomakin_Dmitriy_dW_144_217ms_integ5-rh.stc 
+Lomakin_Dmitriy_dD_144_217ms_integ5-lh.stc Lomakin_Dmitriy_dD_144_217ms_integ5-rh.stc 
+
+Masleniy_Evgeniy_dW_144_217ms_integ5-lh.stc Masleniy_Evgeniy_dW_144_217ms_integ5-rh.stc 
+Masleniy_Evgeniy_dD_144_217ms_integ5-lh.stc Masleniy_Evgeniy_dD_144_217ms_integ5-rh.stc 
+
+Nazarova_Maria_dW_144_217ms_integ5-lh.stc Nazarova_Maria_dW_144_217ms_integ5-rh.stc 
+Nazarova_Maria_dD_144_217ms_integ5-lh.stc Nazarova_Maria_dD_144_217ms_integ5-rh.stc 
+
+Rekubratskiy_Vitaliy_dW_144_217ms_integ5-lh.stc Rekubratskiy_Vitaliy_dW_144_217ms_integ5-rh.stc 
+Rekubratskiy_Vitaliy_dD_144_217ms_integ5-lh.stc Rekubratskiy_Vitaliy_dD_144_217ms_integ5-rh.stc 
+
+Shaballin_Konstantin_dW_144_217ms_integ5-lh.stc Shaballin_Konstantin_dW_144_217ms_integ5-rh.stc 
+Shaballin_Konstantin_dD_144_217ms_integ5-lh.stc Shaballin_Konstantin_dD_144_217ms_integ5-rh.stc 
+
+Shulga_Kirill_dW_144_217ms_integ5-lh.stc Shulga_Kirill_dW_144_217ms_integ5-rh.stc 
+Shulga_Kirill_dD_144_217ms_integ5-lh.stc Shulga_Kirill_dD_144_217ms_integ5-rh.stc 
+
+Skokova_Julia_dW_144_217ms_integ5-lh.stc Skokova_Julia_dW_144_217ms_integ5-rh.stc 
+Skokova_Julia_dD_144_217ms_integ5-lh.stc Skokova_Julia_dD_144_217ms_integ5-rh.stc 
+
+Skovorodko_Olga_dW_144_217ms_integ5-lh.stc Skovorodko_Olga_dW_144_217ms_integ5-rh.stc 
+Skovorodko_Olga_dD_144_217ms_integ5-lh.stc Skovorodko_Olga_dD_144_217ms_integ5-rh.stc 
+
+Slobodskoy_Yaroslav_dW_144_217ms_integ5-lh.stc Slobodskoy_Yaroslav_dW_144_217ms_integ5-rh.stc 
+Slobodskoy_Yaroslav_dD_144_217ms_integ5-lh.stc Slobodskoy_Yaroslav_dD_144_217ms_integ5-rh.stc 
+
+Spiridonov_Arseniy_dW_144_217ms_integ5-lh.stc Spiridonov_Arseniy_dW_144_217ms_integ5-rh.stc 
+Spiridonov_Arseniy_dD_144_217ms_integ5-lh.stc Spiridonov_Arseniy_dD_144_217ms_integ5-rh.stc 
+
+Timonov_Evgeniy_dW_144_217ms_integ5-lh.stc Timonov_Evgeniy_dW_144_217ms_integ5-rh.stc 
+Timonov_Evgeniy_dD_144_217ms_integ5-lh.stc Timonov_Evgeniy_dD_144_217ms_integ5-rh.stc 
+
+Trufanova_Zhenya_dW_144_217ms_integ5-lh.stc Trufanova_Zhenya_dW_144_217ms_integ5-rh.stc 
+Trufanova_Zhenya_dD_144_217ms_integ5-lh.stc Trufanova_Zhenya_dD_144_217ms_integ5-rh.stc 
+
+Vlasova_Roza_dW_144_217ms_integ5-lh.stc Vlasova_Roza_dW_144_217ms_integ5-rh.stc 
+Vlasova_Roza_dD_144_217ms_integ5-lh.stc Vlasova_Roza_dD_144_217ms_integ5-rh.stc 
+
+Yarmolova_Elena_dW_144_217ms_integ5-lh.stc Yarmolova_Elena_dW_144_217ms_integ5-rh.stc 
+Yarmolova_Elena_dD_144_217ms_integ5-lh.stc Yarmolova_Elena_dD_144_217ms_integ5-rh.stc 
+
+--output-stcs 
+ssTFCE_144_217ms_integ5-lh ssTFCE_144_217ms_integ5-rh
+
+

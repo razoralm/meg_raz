@@ -1,0 +1,31 @@
+e = 0.6000, h = 0.7000, 3029 significant voxels
+e = 0.7000, h = 1.0000, 5780 significant voxels
+e = 0.8000, h = 0.5000, 10565 significant voxels
+e = 0.8000, h = 0.6000, 10196 significant voxels
+e = 0.8000, h = 1.7000, 6057 significant voxels
+e = 0.9000, h = 0.8000, 12012 significant voxels
+e = 0.9000, h = 0.0000, 20214 significant voxels
+e = 0.9000, h = 1.3000, 10193 significant voxels
+e = 1.0000, h = 0.5000, 20672 significant voxels
+
+e = 1.0000, h = 0.9000, 15212 significant voxels
+
+e = 1.0000, h = 1.9000, 10484 significant voxels
+e = 1.1000, h = 1.2000, 19043 significant voxels
+e = 1.1000, h = 1.3000, 17630 significant voxels
+e = 1.1000, h = 1.1000, 20511 significant voxels
+e = 1.1000, h = 1.7000, 14034 significant voxels
+e = 1.2000, h = 0.0000, 26907 significant voxels
+e = 1.1000, h = 1.5000, 15405 significant voxels
+e = 1.1000, h = 1.8000, 13555 significant voxels
+e = 1.2000, h = 1.2000, 23093 significant voxels
+e = 1.3000, h = 1.8000, 22990 significant voxels
+e = 1.4000, h = 1.8000, 24555 significant voxels
+e = 1.9000, h = 1.8000, 30026 significant voxels
+e = 1.5000, h = 0.3000, 30216 significant voxels
+e = 1.5000, h = 1.2000, 27075 significant voxels
+e = 1.5000, h = 1.7000, 25960 significant voxels
+e = 1.8000, h = 1.4000, 30071 significant voxels
+e = 1.8000, h = 1.7000, 29239 significant voxels
+e = 1.9000, h = 0.0000, 39878 significant voxels
+
